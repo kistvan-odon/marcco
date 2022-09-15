@@ -87,6 +87,8 @@ class MyClient implements Runnable {
                 MarccoMessage marccoMessage = objectMapper.readValue(json, MarccoMessage.class);
                 if (marccoMessage.gameBoard != null) {
                     marccoMessage.messageType = MessageType.GAME_BOARD;
+                    maxVol = marccoMessage.maxVol;
+                    System.out.println("maxVol: " + maxVol);
                 } else {
                     marccoMessage.messageType = MessageType.OBJECTS;
                 }
