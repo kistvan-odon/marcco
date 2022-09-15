@@ -2,7 +2,7 @@ package com.garmin.marcco;
 
 public class Container {
     int filled;
-    String type;
+    ObjectType type;
 
     public Container() {
         this.filled=0;
@@ -17,11 +17,11 @@ public class Container {
         this.filled = filled;
     }
 
-    public String getType() {
+    public ObjectType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ObjectType type) {
         this.type = type;
     }
 }

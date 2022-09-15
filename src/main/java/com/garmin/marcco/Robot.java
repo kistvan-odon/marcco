@@ -23,7 +23,7 @@ public class Robot {
         this.row = row;
     }
 
-    public boolean canStore(String type, int qty) {
+    public boolean canStore(ObjectType type, int qty) {
 
         for (int i = 0; i < 3; i++) {
             if (containerList.get(i).getType() == null) {
@@ -38,7 +38,7 @@ public class Robot {
 
     }
 
-    public void pickUp(String type, int qty) {
+    public void pickUp(ObjectType type, int qty) {
 //@TODO DACA CRAPA E DE AICI
         boolean ok = false;
         Container nullContainer = null;
@@ -74,7 +74,7 @@ public class Robot {
 
     }
 
-    public void drop(String type){
+    public void drop(ObjectType type){
         for(int i=0;i<3;i++){
             if(containerList.get(i).getType()==type){
                 containerList.get(i).setType(null);
@@ -83,7 +83,7 @@ public class Robot {
         }
     }
 
-    public boolean canDrop(String type){
+    public boolean canDrop(ObjectType type){
         for(int i=0;i<3;i++) {
             if (containerList.get(i).getType() == type) {
                 return true;
