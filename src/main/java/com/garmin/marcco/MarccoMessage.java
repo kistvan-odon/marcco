@@ -59,4 +59,14 @@ public class MarccoMessage {
         }
         return "";
     }
+
+    public void addObjectTypeToGameBoard() {
+        for (Map.Entry<ObjectType, MarccoObject[]> mapEntry: objects.entrySet()) {
+            ObjectType objectType = mapEntry.getKey();
+            MarccoObject[] marccoObjects = mapEntry.getValue();
+            for(MarccoObject object: marccoObjects) {
+                this.gameBoard[object.row][object.col] = Character.toLowerCase(objectType.toString().charAt(0));
+            }
+        }
+    }
 }
