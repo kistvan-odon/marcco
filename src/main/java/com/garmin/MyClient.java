@@ -1,5 +1,8 @@
 package com.garmin;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,13 +11,12 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 class MyClient implements Runnable {
 
+    public static int MAX_VOL=0;
     private ObjectMapper objectMapper = new ObjectMapper();
     private String botId = null;
+    Robot robot=new Robot();
 
     private final Socket connection;
     private boolean connected = true;
@@ -80,9 +82,11 @@ class MyClient implements Runnable {
                 Map<String, String> messageMap = objectMapper.readValue(json, new TypeReference<Map<String, String>>() {
                 });
                 botId = messageMap.get("bot_id");
+            } else {
+                System.out.println("botId " + botId);
+                //TODO: do smth with message
             }
-            System.out.println("botId " + botId);
-            //TODO: do smth with message
+
 
             message = new StringBuilder();
         }
