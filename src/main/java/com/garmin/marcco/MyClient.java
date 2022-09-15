@@ -46,7 +46,6 @@ class MyClient implements Runnable {
 
     public void register(String teamName) {
         String registerMsg = "register: " + teamName;
-        System.out.println(registerMsg);
         registerMsg = "{ \"get_team_id_for\" :\"" + teamName + "\"}";
 
         try {
@@ -57,7 +56,6 @@ class MyClient implements Runnable {
     }
 
     public void sendMessage(String message) throws IOException {
-        System.out.println("sendingMessage: " + message);
         int msgLen = message.length();
         String hex = String.format("%04X", msgLen);
         String fullMsg = hex + message + "\0";
@@ -81,17 +79,14 @@ class MyClient implements Runnable {
 
             } while (c != (char) 0);
             String stringMessage = message.toString();
-            System.out.println("Message received: " + stringMessage);
 
             String json = stringMessage.substring(stringMessage.indexOf("{"), stringMessage.lastIndexOf("}") + 1);
             if (botId == null) {
                 Map<String, String> messageMap = objectMapper.readValue(json, new TypeReference<Map<String, String>>() {
                 });
                 botId = messageMap.get("bot_id");
-                System.out.println("botId: " + botId);
             } else {
                 if (json.contains("\"err\"")) {
-                    System.out.println("ERROR: " + json);
                 } else {
                     MarccoMessage marccoMessage = objectMapper.readValue(json, MarccoMessage.class);
                     if (marccoMessage.gameBoard != null) {
@@ -99,7 +94,6 @@ class MyClient implements Runnable {
                         maxVol = marccoMessage.maxVol;
                         this.board=marccoMessage.gameBoard;
                         dumpsterList=getAllDumpstersFromMatrix(this.board);
-                        System.out.println("maxVol: " + maxVol);
                     } else {
                         marccoMessage.messageType = MessageType.OBJECTS;
                     }
@@ -107,7 +101,6 @@ class MyClient implements Runnable {
                     List<Trash> trashes=changeMappingToList(marccoMessage.objects);
                     String resp=makeAction(robot,this.board,trashes,botId,this.dumpsterList);
                     this.sendMessage(resp);
-                    System.out.println("marccoMessage: " + marccoMessage);
 
                     //TODO: do smth with message
                 }
@@ -116,14 +109,12 @@ class MyClient implements Runnable {
     }
 
     public void close() throws IOException {
-        System.out.println("closing connection");
         this.connected = false;
         this.connection.close();
     }
 
     private Socket initConnection(String address, int port) {
         try {
-            System.out.println("Connected to server at " + address + " on port " + port);
             return new Socket(address, port);
         } catch (IOException exception) {
             exception.printStackTrace();
