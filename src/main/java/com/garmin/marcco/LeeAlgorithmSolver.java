@@ -17,21 +17,6 @@ public class LeeAlgorithmSolver {
                 if (characterMatrix[i][j] == ' ' || characterMatrix[i][j] == 'r' || characterMatrix[i][j] == 'P' || characterMatrix[i][j] == 'W' || characterMatrix[i][j] == 'M' || characterMatrix[i][j] == 'G' || characterMatrix[i][j] == 'E') {
                     distanceMatrix[i][j] = 0;
                 }
-//                switch (characterMatrix[i][j]) {
-//                    case '#':
-//                    case 'o':
-//                        distanceMatrix[i][j] = -1;
-//                        break;
-//                    case ' ':
-//                    case 'r':
-//                    case 'P':
-//                    case 'W':
-//                    case 'M':
-//                    case 'G':
-//                    case 'E':
-//                        distanceMatrix[i][j] = 0;
-//                        break;
-//                }
             }
         }
     }
@@ -64,14 +49,12 @@ public class LeeAlgorithmSolver {
                     positionsMatrix[new_x][new_y] = new Pair<>(currentX, currentY);
                     coveredPoints.add(new Pair<>(new_x, new_y));
                     if (characterMatrix[currentX][currentY] == 'r') {
-                        for (int j = 0; j < 4; j++) {
-                            int new_x_run = new_x + k_x[j];
-                            int new_y_run = new_x + k_y[j];
-                            if (distanceMatrix[new_x_run][new_y_run] == 0) {
-                                distanceMatrix[new_x_run][new_y_run] = 1 + distanceMatrix[currentX][currentY];
-                                positionsMatrix[new_x_run][new_y_run] = new Pair<>(currentX, currentY);
-                                coveredPoints.add(new Pair<>(new_x_run, new_y_run));
-                            }
+                        int new_x_run = new_x + k_x[i];
+                        int new_y_run = new_y + k_y[i];
+                        if (distanceMatrix[new_x_run][new_y_run] == 0) {
+                            distanceMatrix[new_x_run][new_y_run] = 1 + distanceMatrix[currentX][currentY];
+                            positionsMatrix[new_x_run][new_y_run] = new Pair<>(currentX, currentY);
+                            coveredPoints.add(new Pair<>(new_x_run, new_y_run));
                         }
                     }
                 }
