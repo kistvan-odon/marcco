@@ -69,7 +69,12 @@ public class Utils {
 
     private static String computeResponse(Robot robot,char[][] matrix,List<Trash> trashes,List<Dumpster> dumpsterList,String botId){
         String direction=getDirection(robot, matrix, trashes, dumpsterList);
-        return "{ \"move\" : \""+direction+"\", \"speed\": 1, \"bot_id\" :\"" + botId + "\" }";
+        if(direction==null){
+            return null;
+        }
+        String directionSide=direction.split(":")[0];
+        int speed=Integer.parseInt(direction.split(":")[1]);
+        return "{ \"move\" : \""+directionSide+"\", \"speed\":"+speed+", \"bot_id\" :\"" + botId + "\" }";
     }
 
     private static String getDirection(Robot robot,char[][] matrix,List<Trash> trashes,List<Dumpster> dumpsterList){
@@ -101,24 +106,29 @@ public class Utils {
                 .filter(dumpster1 -> dumpster1.objectType.equals(containerType))
                 .findFirst()
                 .orElse(null);
+        if(dumpster==null){
+            return null;
+        }
         return getNextMove(new Pair<>(dumpster.row, dumpster.column), robot, result.positionsMatrix);
     }
     private static String getNextMove(Pair<Integer,Integer> currentPoint, Robot robot, Pair[][] positionsDistances) {
         if(positionsDistances[currentPoint.getFirst()][currentPoint.getSecond()].equals(new Pair<>(robot.row, robot.col))) {
             if(currentPoint.getFirst() == robot.row) {
+                int distance = Math.abs(robot.col - currentPoint.getSecond());
                 if(currentPoint.getSecond() < robot.col) {
-                    return "left";
+                    return "left:" + distance;
                 }
                 else {
-                    return "right";
+                    return "right:"+distance;
                 }
             }
             else {
+                int distance = Math.abs(robot.row - currentPoint.getFirst());
                 if(currentPoint.getFirst() < robot.row) {
-                    return "up";
+                    return "up:"+distance;
                 }
                 else {
-                    return "down";
+                    return "down:"+distance;
                 }
             }
         }
