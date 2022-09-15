@@ -61,9 +61,9 @@ class MyClient implements Runnable {
     }
 
     private void read() throws IOException {
-        StringBuilder message = new StringBuilder();
         char c;
         while (true) {
+            StringBuilder message = new StringBuilder();
             do {
                 int r = this.buffReader.read();
                 if (r < 0 || r > 65535) {
@@ -84,20 +84,22 @@ class MyClient implements Runnable {
                 botId = messageMap.get("bot_id");
                 System.out.println("botId: " + botId);
             } else {
-                MarccoMessage marccoMessage = objectMapper.readValue(json, MarccoMessage.class);
-                if (marccoMessage.gameBoard != null) {
-                    marccoMessage.messageType = MessageType.GAME_BOARD;
-                    maxVol = marccoMessage.maxVol;
-                    System.out.println("maxVol: " + maxVol);
+                if (json.contains("\"err\"")) {
+                    System.out.println("ERROR: " + json);
                 } else {
-                    marccoMessage.messageType = MessageType.OBJECTS;
+                    MarccoMessage marccoMessage = objectMapper.readValue(json, MarccoMessage.class);
+                    if (marccoMessage.gameBoard != null) {
+                        marccoMessage.messageType = MessageType.GAME_BOARD;
+                        maxVol = marccoMessage.maxVol;
+                        System.out.println("maxVol: " + maxVol);
+                    } else {
+                        marccoMessage.messageType = MessageType.OBJECTS;
+                    }
+                    System.out.println("marccoMessage: " + marccoMessage);
+
+                    //TODO: do smth with message
                 }
-                System.out.println("marccoMessage: " + marccoMessage);
-
-                //TODO: do smth with message
             }
-
-            message = new StringBuilder();
         }
     }
 
