@@ -1,10 +1,10 @@
-package com.garmin;
+package com.garmin.marcco;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.garmin.MyClient.MAX_VOL;
+import static com.garmin.marcco.MyClient.maxVol;
 
 public class Robot {
     int row;
@@ -29,7 +29,7 @@ public class Robot {
             if (containerList.get(i).getType() == null) {
                 return true;
             }
-            if (containerList.get(i).getType() == type && containerList.get(i).getFilled() + qty <= MAX_VOL) {
+            if (containerList.get(i).getType() == type && containerList.get(i).getFilled() + qty <= maxVol) {
                 return true;
             }
         }
@@ -54,13 +54,13 @@ public class Robot {
                 }
             }
             if (c.getType() == type) {
-                if (c.getFilled() + qty <= MAX_VOL) {
+                if (c.getFilled() + qty <= maxVol) {
                     c.setFilled(c.getFilled() + qty);
                     return;
                 }
-                int remaning = MAX_VOL - c.getFilled();
-                c.setFilled(MAX_VOL);
-                qty -= remaning;
+                int remaining = maxVol - c.getFilled();
+                c.setFilled(maxVol);
+                qty -= remaining;
                 ok = true;
                 if (nullContainer != null) {
                     nullContainer.setType(type);
