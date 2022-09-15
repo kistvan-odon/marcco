@@ -15,7 +15,7 @@ public class Robot {
         Container c1 = new Container();
         Container c2 = new Container();
         Container c3 = new Container();
-        List<Container> containerList = new ArrayList<>(Arrays.asList(c1, c2, c3));
+        containerList = new ArrayList<>(Arrays.asList(c1, c2, c3));
     }
 
     public void updateLocation(int col, int row) {
@@ -45,7 +45,7 @@ public class Robot {
         for (int i = 0; i < 3; i++) {
             Container c = containerList.get(i);
             if (c.getType() == null) {
-                if (ok == true) {
+                if (ok) {
                     c.setType(type);
                     c.setFilled(qty);
                     return;

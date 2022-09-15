@@ -6,18 +6,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static com.garmin.marcco.Utils.changeMappingToList;
+import static com.garmin.marcco.Utils.makeAction;
 
 class MyClient implements Runnable {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     public static String botId;
     public static int maxVol;
-    private Robot robot = new Robot();
-
+    private final Robot robot = new Robot();
+    char[][]board;
     private final Socket connection;
     private boolean connected = true;
     private final BufferedReader buffReader;
@@ -91,10 +95,15 @@ class MyClient implements Runnable {
                     if (marccoMessage.gameBoard != null) {
                         marccoMessage.messageType = MessageType.GAME_BOARD;
                         maxVol = marccoMessage.maxVol;
+                        this.board=marccoMessage.gameBoard;
                         System.out.println("maxVol: " + maxVol);
                     } else {
                         marccoMessage.messageType = MessageType.OBJECTS;
                     }
+                    robot.updateLocation(marccoMessage.row,marccoMessage.col);
+                    List<Trash> trashes=changeMappingToList(marccoMessage.objects);
+                    String resp=makeAction(robot,this.board,trashes,botId);
+                    this.sendMessage(resp);
                     System.out.println("marccoMessage: " + marccoMessage);
 
                     //TODO: do smth with message

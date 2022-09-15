@@ -40,14 +40,14 @@ public class Utils {
         switch (decider) {
             case "drop":
                 robot.drop(ObjectType.valueOf(String.valueOf(tabla[i][j])));
-                return "{ \"action\" : \"drop\", \"bot_id\" :" + botId + " }";
+                return "{ \"action\" : \"drop\", \"bot_id\" :\"" + botId + "\" }";
             case "pick":
                 robot.pickUp(trashAtIndexes.type, trashAtIndexes.volume);
-                return "{ \"action\" : \"pick\", \"bot_id\" :" + botId + " }";
+                return "{ \"action\" : \"pick\", \"bot_id\" :\"" + botId + "\" }";
             case "road":
-                return "{ \"move\" : \"up\", \"speed\": 2, \"bot_id\" :" + botId + " }";
+                return "{ \"move\" : \"up\", \"speed\": 2, \"bot_id\" :\"" + botId + "\" }";
             default:
-                return "{ \"move\" : \"down\", \"speed\": 1, \"bot_id\" :" + botId + " }";
+                return "{ \"move\" : \"up\", \"speed\": 1, \"bot_id\" :\"" + botId + "\" }";
         }
     }
 
