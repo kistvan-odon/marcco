@@ -18,18 +18,18 @@ public class Robot {
         containerList = new ArrayList<>(Arrays.asList(c1, c2, c3));
     }
 
-    public void updateLocation(int col, int row) {
+    public void updateLocation(int row, int col) {
         this.col = col;
         this.row = row;
     }
 
-    public boolean canStore(ObjectType type, int qty) {
+    public boolean canStore(Trash trash) {
 
         for (int i = 0; i < 3; i++) {
             if (containerList.get(i).getType() == null) {
                 return true;
             }
-            if (containerList.get(i).getType() == type && containerList.get(i).getFilled() + qty <= maxVol) {
+            if (containerList.get(i).getType() == trash.type && containerList.get(i).getFilled() + trash.volume <= maxVol) {
                 return true;
             }
         }

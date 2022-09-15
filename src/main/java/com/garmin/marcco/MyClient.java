@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.garmin.marcco.Utils.changeMappingToList;
+import static com.garmin.marcco.Utils.getAllDumpstersFromMatrix;
 import static com.garmin.marcco.Utils.makeAction;
 
 class MyClient implements Runnable {
@@ -22,6 +23,7 @@ class MyClient implements Runnable {
     public static int maxVol;
     private final Robot robot = new Robot();
     char[][]board;
+    List<Dumpster> dumpsterList;
     private final Socket connection;
     private boolean connected = true;
     private final BufferedReader buffReader;
@@ -96,13 +98,14 @@ class MyClient implements Runnable {
                         marccoMessage.messageType = MessageType.GAME_BOARD;
                         maxVol = marccoMessage.maxVol;
                         this.board=marccoMessage.gameBoard;
+                        dumpsterList=getAllDumpstersFromMatrix(this.board);
                         System.out.println("maxVol: " + maxVol);
                     } else {
                         marccoMessage.messageType = MessageType.OBJECTS;
                     }
                     robot.updateLocation(marccoMessage.row,marccoMessage.col);
                     List<Trash> trashes=changeMappingToList(marccoMessage.objects);
-                    String resp=makeAction(robot,this.board,trashes,botId);
+                    String resp=makeAction(robot,this.board,trashes,botId,this.dumpsterList);
                     this.sendMessage(resp);
                     System.out.println("marccoMessage: " + marccoMessage);
 
