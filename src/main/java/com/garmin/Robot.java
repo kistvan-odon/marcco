@@ -82,4 +82,13 @@ public class Robot {
             }
         }
     }
+
+    public boolean canDrop(String type){
+        for(int i=0;i<3;i++) {
+            if (containerList.get(i).getType() == type) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
