@@ -7,8 +7,8 @@ import java.util.List;
 import static com.garmin.marcco.MyClient.maxVol;
 
 public class Robot {
-    int row;
-    int col;
+    public int row;
+    public int col;
     List<Container> containerList;
 
     public Robot() {
