@@ -100,6 +100,9 @@ class MyClient implements Runnable {
                     robot.updateLocation(marccoMessage.row,marccoMessage.col);
                     List<Trash> trashes=changeMappingToList(marccoMessage.objects);
                     String resp=makeAction(robot,this.board,trashes,botId,this.dumpsterList);
+                    if (resp == null) {
+                        continue;
+                    }
                     this.sendMessage(resp);
 
                     //TODO: do smth with message
