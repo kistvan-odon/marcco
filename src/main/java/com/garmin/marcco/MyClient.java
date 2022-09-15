@@ -1,7 +1,4 @@
-package com.garmin;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+package com.garmin.marcco;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,12 +8,15 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 class MyClient implements Runnable {
 
-    public static int MAX_VOL=0;
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private String botId = null;
-    Robot robot=new Robot();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    public static String botId;
+    public static int maxVol;
+    private Robot robot = new Robot();
 
     private final Socket connection;
     private boolean connected = true;
@@ -62,7 +62,6 @@ class MyClient implements Runnable {
 
     private void read() throws IOException {
         StringBuilder message = new StringBuilder();
-        String stringMessage = null;
         char c;
         while (true) {
             do {
@@ -75,18 +74,26 @@ class MyClient implements Runnable {
                 message.append(c);
 
             } while (c != (char) 0);
-            System.out.println("Message received: " + message);
-            stringMessage = message.toString();
+            String stringMessage = message.toString();
+            System.out.println("Message received: " + stringMessage);
+
+            String json = stringMessage.substring(stringMessage.indexOf("{"), stringMessage.lastIndexOf("}") + 1);
             if (botId == null) {
-                String json = stringMessage.substring(stringMessage.indexOf("{"), stringMessage.lastIndexOf("}") + 1);
                 Map<String, String> messageMap = objectMapper.readValue(json, new TypeReference<Map<String, String>>() {
                 });
                 botId = messageMap.get("bot_id");
+                System.out.println("botId: " + botId);
             } else {
-                System.out.println("botId " + botId);
+                MarccoMessage marccoMessage = objectMapper.readValue(json, MarccoMessage.class);
+                if (marccoMessage.gameBoard != null) {
+                    marccoMessage.messageType = MessageType.GAME_BOARD;
+                } else {
+                    marccoMessage.messageType = MessageType.OBJECTS;
+                }
+                System.out.println("marccoMessage: " + marccoMessage);
+
                 //TODO: do smth with message
             }
-
 
             message = new StringBuilder();
         }
