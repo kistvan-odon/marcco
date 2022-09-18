@@ -1,4 +1,6 @@
-package com.garmin.marcco;
+package com.garmin.marcco.model;
+
+import com.garmin.marcco.model.ObjectType;
 
 public class Trash {
 

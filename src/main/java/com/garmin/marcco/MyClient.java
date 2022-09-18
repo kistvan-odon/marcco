@@ -11,6 +11,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.garmin.marcco.model.Dumpster;
+import com.garmin.marcco.model.MarccoMessage;
+import com.garmin.marcco.model.MessageType;
+import com.garmin.marcco.model.Trash;
 
 import static com.garmin.marcco.Utils.changeMappingToList;
 import static com.garmin.marcco.Utils.getAllDumpstersFromMatrix;
@@ -56,6 +60,7 @@ class MyClient implements Runnable {
     }
 
     public void sendMessage(String message) throws IOException {
+        System.out.println("Sending message: " + message);
         int msgLen = message.length();
         String hex = String.format("%04X", msgLen);
         String fullMsg = hex + message + "\0";
@@ -79,6 +84,7 @@ class MyClient implements Runnable {
 
             } while (c != (char) 0);
             String stringMessage = message.toString();
+            System.out.println("Message received: " + stringMessage);
 
             String json = stringMessage.substring(stringMessage.indexOf("{"), stringMessage.lastIndexOf("}") + 1);
             if (botId == null) {
@@ -87,8 +93,10 @@ class MyClient implements Runnable {
                 botId = messageMap.get("bot_id");
             } else {
                 if (json.contains("\"err\"")) {
+                    System.err.println("ERROR: " + json);
                 } else {
                     MarccoMessage marccoMessage = objectMapper.readValue(json, MarccoMessage.class);
+                    System.out.println("marccoMessage: " + marccoMessage);
                     if (marccoMessage.gameBoard != null) {
                         marccoMessage.messageType = MessageType.GAME_BOARD;
                         maxVol = marccoMessage.maxVol;
@@ -118,6 +126,7 @@ class MyClient implements Runnable {
 
     private Socket initConnection(String address, int port) {
         try {
+            System.out.println("Connected to server at " + address + " on port " + port);
             return new Socket(address, port);
         } catch (IOException exception) {
             exception.printStackTrace();

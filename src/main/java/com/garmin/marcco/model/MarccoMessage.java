@@ -1,11 +1,11 @@
-package com.garmin.marcco;
+package com.garmin.marcco.model;
 
 import java.util.Arrays;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MarccoMessage {
 
     public MessageType messageType;
@@ -17,10 +17,13 @@ public class MarccoMessage {
     public int maxVol;
     public Map<ObjectType, MarccoObject[]> objects;
 
+    public Container[] containers;
+
     @Override
     public String toString() {
         return "MarccoMessage{" + "messageType=" + messageType + ", gameBoard=" + getGameBoardAsString(
-                gameBoard) + ", col=" + col + ", row=" + row + ", round=" + round + ", state=" + state + ", maxVol=" + maxVol + ", objects=" + getObjectsAsString(objects) + '}';
+                gameBoard) + ", col=" + col + ", row=" + row + ", round=" + round + ", state=" + state + ", maxVol=" + maxVol + ", objects=" + getObjectsAsString(objects) +
+                ", containers=" + Arrays.toString(containers) +'}';
     }
 
     public String getGameBoardAsString(char[][] gameBoard) {
@@ -60,11 +63,11 @@ public class MarccoMessage {
         return "";
     }
 
-    public void addObjectTypeToGameBoard() {
-        for (Map.Entry<ObjectType, MarccoObject[]> mapEntry: objects.entrySet()) {
+    public void addObjectsToGameBoard() {
+        for (Map.Entry<ObjectType, MarccoObject[]> mapEntry : objects.entrySet()) {
             ObjectType objectType = mapEntry.getKey();
             MarccoObject[] marccoObjects = mapEntry.getValue();
-            for(MarccoObject object: marccoObjects) {
+            for (MarccoObject object : marccoObjects) {
                 this.gameBoard[object.row][object.col] = Character.toLowerCase(objectType.toString().charAt(0));
             }
         }

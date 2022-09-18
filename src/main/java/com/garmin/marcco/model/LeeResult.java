@@ -1,4 +1,4 @@
-package com.garmin.marcco;
+package com.garmin.marcco.model;
 
 public class LeeResult {
     public int[][] distanceMatrix;

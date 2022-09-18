@@ -1,5 +1,8 @@
 package com.garmin.marcco;
 
+import com.garmin.marcco.model.LeeResult;
+import com.garmin.marcco.model.Pair;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -48,18 +51,18 @@ public class LeeAlgorithmSolver {
                     distanceMatrix[new_x][new_y] = 1 + distanceMatrix[currentX][currentY];
                     positionsMatrix[new_x][new_y] = new Pair<>(currentX, currentY);
                     coveredPoints.add(new Pair<>(new_x, new_y));
-                    if (characterMatrix[currentX][currentY] == 'r') {
-                        int new_x_run = new_x + k_x[i];
-                        int new_y_run = new_y + k_y[i];
-                        if (distanceMatrix[new_x_run][new_y_run] == 0) {
-                            distanceMatrix[new_x_run][new_y_run] = 1 + distanceMatrix[currentX][currentY];
-                            positionsMatrix[new_x_run][new_y_run] = new Pair<>(currentX, currentY);
-                            coveredPoints.add(new Pair<>(new_x_run, new_y_run));
-                        }
+                    int new_x_run = new_x + k_x[i];
+                    int new_y_run = new_y + k_y[i];
+                    if (characterMatrix[currentX][currentY] == 'r' && characterMatrix[new_x_run][new_y_run] != '#' && distanceMatrix[new_x_run][new_y_run] == 0) {
+                        distanceMatrix[new_x_run][new_y_run] = 1 + distanceMatrix[currentX][currentY];
+                        positionsMatrix[new_x_run][new_y_run] = new Pair<>(currentX, currentY);
+                        coveredPoints.add(new Pair<>(new_x_run, new_y_run));
                     }
                 }
             }
         }
-        return new LeeResult(distanceMatrix, positionsMatrix);
+        return new
+
+                LeeResult(distanceMatrix, positionsMatrix);
     }
 }
