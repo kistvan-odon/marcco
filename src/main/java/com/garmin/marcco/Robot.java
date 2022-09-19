@@ -13,7 +13,7 @@ import static com.garmin.marcco.MyClient.maxVol;
 public class Robot {
     public int row;
     public int col;
-    List<Container> containerList;
+    public List<Container> containerList;
     boolean hasBattery = false;
 
     public Robot() {
@@ -29,7 +29,9 @@ public class Robot {
     }
 
     public boolean canStore(Trash trash) {
-
+        if (hasBattery && trash.type == ObjectType.B) {
+            return false;
+        }
         for (int i = 0; i < 3; i++) {
             if (containerList.get(i).getType() == null) {
                 return true;
@@ -48,6 +50,7 @@ public class Robot {
         boolean ok = false;
         if (ObjectType.B == type) {
             hasBattery = true;
+            ok = true;
         }
         Container nullContainer = null;
         for (int i = 0; i < 3; i++) {
@@ -84,17 +87,17 @@ public class Robot {
 
     }
 
-    public void drop(ObjectType type){
-        for(int i=0;i<3;i++){
-            if(containerList.get(i).getType()==type){
+    public void drop(ObjectType type) {
+        for (int i = 0; i < 3; i++) {
+            if (containerList.get(i).getType() == type) {
                 containerList.get(i).setType(null);
                 containerList.get(i).setVolume(0);
             }
         }
     }
 
-    public boolean canDrop(ObjectType type){
-        for(int i=0;i<3;i++) {
+    public boolean canDrop(ObjectType type) {
+        for (int i = 0; i < 3; i++) {
             if (containerList.get(i).getType() == type) {
                 return true;
             }

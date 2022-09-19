@@ -2,8 +2,11 @@ package com.garmin.marcco;
 
 import com.garmin.marcco.model.LeeResult;
 import com.garmin.marcco.model.Pair;
+import com.garmin.marcco.model.Trash;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 
 public class LeeAlgorithmSolver {
@@ -31,7 +34,7 @@ public class LeeAlgorithmSolver {
      * @param start_x         - part of the starting point
      * @param start_y         - part of the starting point
      */
-    public static LeeResult solveLee(char[][] characterMatrix, int start_x, int start_y) {
+    public static LeeResult solveLee(char[][] characterMatrix, int start_x, int start_y, List<Trash> trashes) {
         int matrixSizeRows = characterMatrix.length;
         int matrixSizeColumns = characterMatrix[0].length;
         int[][] distanceMatrix = new int[matrixSizeRows][matrixSizeColumns];
@@ -43,7 +46,8 @@ public class LeeAlgorithmSolver {
         coveredPoints.add(new Pair<>(start_x, start_y));
         while (!coveredPoints.isEmpty()) {
             Pair<Integer, Integer> currentPoint = coveredPoints.poll();
-            int currentX = currentPoint.getFirst(), currentY = currentPoint.getSecond();
+            int currentX = currentPoint.getFirst();
+            int currentY = currentPoint.getSecond();
             for (int i = 0; i < 4; i++) {
                 int new_x = currentX + k_x[i];
                 int new_y = currentY + k_y[i];
@@ -51,18 +55,31 @@ public class LeeAlgorithmSolver {
                     distanceMatrix[new_x][new_y] = 1 + distanceMatrix[currentX][currentY];
                     positionsMatrix[new_x][new_y] = new Pair<>(currentX, currentY);
                     coveredPoints.add(new Pair<>(new_x, new_y));
+                    Optional<Trash> trash = trashes.stream().filter(trash1 -> trash1.row == new_x && trash1.column == new_y).findFirst();
+                    if (trash.isPresent()) {
+                        continue;
+                    }
                     int new_x_run = new_x + k_x[i];
                     int new_y_run = new_y + k_y[i];
-                    if (characterMatrix[currentX][currentY] == 'r' && characterMatrix[new_x_run][new_y_run] != '#' && distanceMatrix[new_x_run][new_y_run] == 0) {
+                    if (characterMatrix[currentX][currentY] == 'r' && new_x_run >= 0 && new_y_run >= 0 && new_x_run < distanceMatrix.length && new_y_run < distanceMatrix.length && characterMatrix[new_x_run][new_y_run] != '#' && distanceMatrix[new_x_run][new_y_run] == 0) {
                         distanceMatrix[new_x_run][new_y_run] = 1 + distanceMatrix[currentX][currentY];
                         positionsMatrix[new_x_run][new_y_run] = new Pair<>(currentX, currentY);
                         coveredPoints.add(new Pair<>(new_x_run, new_y_run));
                     }
+                    trash = trashes.stream().filter(trash1 -> trash1.row == new_x_run && trash1.column == new_y_run).findFirst();
+                    if (trash.isPresent()) {
+                        continue;
+                    }
+                    int new_x_run_battery = new_x_run + k_x[i];
+                    int new_y_run_battery = new_y_run + k_y[i];
+                    if (MyClient.hasBattery && new_x_run_battery >= 0 && new_y_run_battery >= 0 && new_x_run_battery < distanceMatrix.length && new_y_run_battery < distanceMatrix.length && characterMatrix[new_x_run_battery][new_y_run_battery] != '#' && distanceMatrix[new_x_run_battery][new_y_run_battery] == 0) {
+                        distanceMatrix[new_x_run_battery][new_y_run_battery] = 1 + distanceMatrix[currentX][currentY];
+                        positionsMatrix[new_x_run_battery][new_y_run_battery] = new Pair<>(currentX, currentY);
+                        coveredPoints.add(new Pair<>(new_x_run_battery, new_y_run_battery));
+                    }
                 }
             }
         }
-        return new
-
-                LeeResult(distanceMatrix, positionsMatrix);
+        return new LeeResult(distanceMatrix, positionsMatrix);
     }
 }

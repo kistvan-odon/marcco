@@ -1,14 +1,14 @@
 package com.garmin.marcco.model;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MarccoMessage {
 
-    public MessageType messageType;
     public char[][] gameBoard;
     public int col;
     public int row;
@@ -17,13 +17,13 @@ public class MarccoMessage {
     public int maxVol;
     public Map<ObjectType, MarccoObject[]> objects;
 
-    public Container[] containers;
+    public List<Container> containers;
 
     @Override
     public String toString() {
-        return "MarccoMessage{" + "messageType=" + messageType + ", gameBoard=" + getGameBoardAsString(
-                gameBoard) + ", col=" + col + ", row=" + row + ", round=" + round + ", state=" + state + ", maxVol=" + maxVol + ", objects=" + getObjectsAsString(objects) +
-                ", containers=" + Arrays.toString(containers) +'}';
+        return "MarccoMessage {gameBoard=" + getGameBoardAsString(
+                gameBoard) + ", col=" + col + ", row=" + row + ", round=" + round + ", state=" + state + ", maxVol=" + maxVol + ", objects= " + getObjectsAsString(objects) +
+                ", containers= " + containers + '}';
     }
 
     public String getGameBoardAsString(char[][] gameBoard) {
@@ -32,11 +32,13 @@ public class MarccoMessage {
             stringBuilder.append("[");
             for (char[] row : gameBoard) {
                 stringBuilder.append("[");
-                for (char column : row) {
+                for (int i = 0; i < row.length; i++) {
                     stringBuilder.append("\"");
-                    stringBuilder.append(column);
+                    stringBuilder.append(row[i]);
                     stringBuilder.append("\"");
-                    stringBuilder.append(",");
+                    if (i < row.length - 1) {
+                        stringBuilder.append(",");
+                    }
                 }
                 stringBuilder.append("]");
             }

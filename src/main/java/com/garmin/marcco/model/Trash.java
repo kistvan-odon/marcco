@@ -1,7 +1,5 @@
 package com.garmin.marcco.model;
 
-import com.garmin.marcco.model.ObjectType;
-
 public class Trash {
 
     public ObjectType type;
@@ -15,6 +13,6 @@ public class Trash {
         this.row = row;
         this.column = column;
         this.volume = volume;
-        this.coefficient=0D;
+        this.coefficient = 0D;
     }
 }

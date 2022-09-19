@@ -1,5 +1,11 @@
 package com.garmin.marcco;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.garmin.marcco.model.Dumpster;
+import com.garmin.marcco.model.MarccoMessage;
+import com.garmin.marcco.model.Trash;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,29 +15,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.garmin.marcco.model.Dumpster;
-import com.garmin.marcco.model.MarccoMessage;
-import com.garmin.marcco.model.MessageType;
-import com.garmin.marcco.model.Trash;
-
-import static com.garmin.marcco.Utils.changeMappingToList;
-import static com.garmin.marcco.Utils.getAllDumpstersFromMatrix;
-import static com.garmin.marcco.Utils.makeAction;
+import static com.garmin.marcco.Utils.*;
 
 class MyClient implements Runnable {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
     public static String botId;
     public static int maxVol;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final Robot robot = new Robot();
-    char[][]board;
-    List<Dumpster> dumpsterList;
     private final Socket connection;
-    private boolean connected = true;
     private final BufferedReader buffReader;
     private final OutputStream writer;
+    char[][] board;
+    List<Dumpster> dumpsterList;
+    private boolean connected = true;
+    public static boolean hasBattery = false;
 
     public MyClient(String address, int port) {
         this.connection = initConnection(address, port);
@@ -96,23 +94,20 @@ class MyClient implements Runnable {
                     System.err.println("ERROR: " + json);
                 } else {
                     MarccoMessage marccoMessage = objectMapper.readValue(json, MarccoMessage.class);
-                    System.out.println("marccoMessage: " + marccoMessage);
+//                    System.out.println("marccoMessage: " + marccoMessage);
                     if (marccoMessage.gameBoard != null) {
-                        marccoMessage.messageType = MessageType.GAME_BOARD;
                         maxVol = marccoMessage.maxVol;
-                        this.board=marccoMessage.gameBoard;
-                        dumpsterList=getAllDumpstersFromMatrix(this.board);
-                    } else {
-                        marccoMessage.messageType = MessageType.OBJECTS;
+                        this.board = marccoMessage.gameBoard;
+                        dumpsterList = getAllDumpstersFromMatrix(this.board);
                     }
-                    robot.updateLocation(marccoMessage.row,marccoMessage.col);
-                    List<Trash> trashes=changeMappingToList(marccoMessage.objects);
-                    String resp=makeAction(robot,this.board,trashes,botId,this.dumpsterList);
+                    robot.updateLocation(marccoMessage.row, marccoMessage.col);
+                    List<Trash> trashes = changeMappingToList(marccoMessage.objects);
+                    String resp = makeAction(robot, this.board, trashes, botId, this.dumpsterList);
                     if (resp == null) {
                         continue;
                     }
                     this.sendMessage(resp);
-
+                    hasBattery = robot.hasBattery;
                     //TODO: do smth with message
                 }
             }

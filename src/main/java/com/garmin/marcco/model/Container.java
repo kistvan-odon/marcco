@@ -5,8 +5,8 @@ public class Container {
     private ObjectType type;
 
     public Container() {
-        this.volume =0;
-        this.type=null;
+        this.volume = 0;
+        this.type = null;
     }
 
     public int getVolume() {

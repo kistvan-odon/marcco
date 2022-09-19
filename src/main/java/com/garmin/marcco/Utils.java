@@ -2,10 +2,7 @@ package com.garmin.marcco;
 
 import com.garmin.marcco.model.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Utils {
 
@@ -57,11 +54,14 @@ public class Utils {
         List<Trash> trashes = new ArrayList<>();
         for (Map.Entry<ObjectType, MarccoObject[]> mapEntry : objects.entrySet()) {
             ObjectType objectType = mapEntry.getKey();
-            if (objectType == ObjectType.R || objectType == ObjectType.B) {
+            if (objectType == ObjectType.R) {
                 continue;
             }
             MarccoObject[] marccoObjects = mapEntry.getValue();
             for (MarccoObject object : marccoObjects) {
+                if (objectType == ObjectType.B) {
+                    object.volume = 100;
+                }
                 Trash trash = new Trash(objectType, object.row, object.col, object.volume);
                 trashes.add(trash);
             }
@@ -82,7 +82,7 @@ public class Utils {
     private static String getDirection(Robot robot, char[][] matrix, List<Trash> trashes, List<Dumpster> dumpsterList) {
         int i = robot.row;
         int j = robot.col;
-        LeeResult result = LeeAlgorithmSolver.solveLee(matrix, i, j);
+        LeeResult result = LeeAlgorithmSolver.solveLee(matrix, i, j, trashes);
         computeCoeffs(trashes, result);
         trashes.sort((o1, o2) -> Double.compare(o2.coefficient, o1.coefficient));
         Trash bestTrash = null;
@@ -95,7 +95,15 @@ public class Utils {
         if (bestTrash != null) {
             return getNextMove(new Pair<>(bestTrash.row, bestTrash.column), robot, result.positionsMatrix);
         }
-        List<Container> containers = robot.containerList;
+        List<Container> containers = new ArrayList<>(robot.containerList);
+        if (MyClient.hasBattery) {
+            Optional<Container> battery = containers.stream().filter(container -> container.getType() == ObjectType.B).findFirst();
+            if (battery.isPresent()) {
+                containers.remove(battery.get());
+            } else {
+                System.out.println("We have a problem!!!");
+            }
+        }
         containers.sort(new Comparator<Container>() {
             @Override
             public int compare(Container o1, Container o2) {
@@ -109,30 +117,31 @@ public class Utils {
                 .findFirst()
                 .orElse(null);
         if (dumpster == null) {
+            System.out.println("We have a problem!!!");
             return null;
         }
         return getNextMove(new Pair<>(dumpster.row, dumpster.column), robot, result.positionsMatrix);
     }
 
-    private static String getNextMove(Pair<Integer, Integer> currentPoint, Robot robot, Pair[][] positionsDistances) {
-        if (positionsDistances[currentPoint.getFirst()][currentPoint.getSecond()].equals(new Pair<>(robot.row, robot.col))) {
-            if (currentPoint.getFirst() == robot.row) {
-                int distance = Math.abs(robot.col - currentPoint.getSecond());
-                if (currentPoint.getSecond() < robot.col) {
+    private static String getNextMove(Pair<Integer, Integer> nextPoint, Robot robot, Pair[][] positionsDistances) {
+        if (positionsDistances[nextPoint.getFirst()][nextPoint.getSecond()].equals(new Pair<>(robot.row, robot.col))) {
+            if (nextPoint.getFirst() == robot.row) {
+                int distance = Math.abs(robot.col - nextPoint.getSecond());
+                if (nextPoint.getSecond() < robot.col) {
                     return "left:" + distance;
                 } else {
                     return "right:" + distance;
                 }
             } else {
-                int distance = Math.abs(robot.row - currentPoint.getFirst());
-                if (currentPoint.getFirst() < robot.row) {
+                int distance = Math.abs(robot.row - nextPoint.getFirst());
+                if (nextPoint.getFirst() < robot.row) {
                     return "up:" + distance;
                 } else {
                     return "down:" + distance;
                 }
             }
         } else {
-            return getNextMove(positionsDistances[currentPoint.getFirst()][currentPoint.getSecond()], robot, positionsDistances);
+            return getNextMove(positionsDistances[nextPoint.getFirst()][nextPoint.getSecond()], robot, positionsDistances);
         }
     }
 
